@@ -1,3 +1,0 @@
-wget
-PyPDF2
-tabula
