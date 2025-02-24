@@ -174,6 +174,7 @@ def identifica_nomes(nomear_designar, subtexto_paragrafo, pagina, nome_arquivo):
 
                                 nome_tabela.at[i, 'Nome'] = tabela.at[i,'NOME']
                                 nome_tabela.at[i, 'Função'] = tabela.at[i,'FUNÇÃO']
+                                nome_tabela.at[i, 'Cargo'] = tabela.at[i,'CARGO']
 
                             if("SÍMBOLO" in colunas):
 
@@ -658,8 +659,15 @@ def identifica_orgao2(nomear_designar, subtexto_paragrafo, orgao1):
                                     
                                     if("Empresa de" in subtexto_paragrafo):
 
-                                        orgao2 = "Empresa de" + subtexto_paragrafo.partition("Empresa de")[2].split(".")[0] + ".A."
-                                        orgao2 = orgao2.split(",")[0]
+                                        if("S." in subtexto_paragrafo):
+
+                                            orgao2 = "Empresa de" + subtexto_paragrafo.partition("Empresa de")[2].split(".")[0] + ".A."
+                                            orgao2 = orgao2.split(",")[0]
+
+                                        else:
+
+                                            orgao2 = "Empresa de" + subtexto_paragrafo.partition("Empresa de")[2].split(".")[0]
+                                            orgao2 = orgao2.split(",")[0]
                                 
     orgao2 = orgao2.replace("d a", "da")
     return orgao2
@@ -691,7 +699,11 @@ def identifica_simbolo(nomear_designar, subtexto_paragrafo):
 
             if("DAS" in sub_texto_identifica_simbolo):
 
-                simbolo = "DAS" + sub_texto_identifica_simbolo.partition("DAS")[2].split(",")[0]   
+                simbolo = "DAS" + sub_texto_identifica_simbolo.partition("DAS")[2].split(",")[0] 
+
+    if("código" in simbolo):
+
+        simbolo = simbolo.split("código")[0]
                 
     return simbolo  
 
@@ -809,28 +821,28 @@ def identifica_nomeacoes(texto_formatado, nome_arquivo):
 
                             linha += 1
 
-                    else:
+                        else:
 
-                        #ÓRGÃO 1
+                            #ÓRGÃO 1
 
-                        orgao1 = ""
+                            orgao1 = ""
 
-                        orgao1 = identifica_orgao1(nomear_designar, subtexto_paragrafo)
+                            orgao1 = identifica_orgao1(nomear_designar, subtexto_paragrafo)
 
-                        # ÓRGÃO 2
+                            # ÓRGÃO 2
 
-                        orgao2 = ""
+                            orgao2 = ""
 
-                        orgao2 = identifica_orgao2(nomear_designar, subtexto_paragrafo, orgao1)    
+                            orgao2 = identifica_orgao2(nomear_designar, subtexto_paragrafo, orgao1)    
 
-                        for i, texto in nomes_tabela.iterrows():
+                            for i, texto in nomes_tabela.iterrows():
 
-                            nomes_tabela.at[i, 'Órgão 1'] = orgao1
-                            nomes_tabela.at[i, 'Órgão 2'] = orgao2
+                                nomes_tabela.at[i, 'Órgão 1'] = orgao1
+                                nomes_tabela.at[i, 'Órgão 2'] = orgao2
 
-                        if(not nomes_tabela.empty):
+                            if(not nomes_tabela.empty):
 
-                            nomeacoes = pd.concat([nomeacoes, nomes_tabela])
+                                nomeacoes = pd.concat([nomeacoes, nomes_tabela])
     
     nomeacoes = nomeacoes.reset_index(drop=True)
 
@@ -842,7 +854,6 @@ def identifica_exoneracoes(texto_formatado, nome_arquivo):
     exoneracoes = pd.DataFrame()
 
     linha = 0
-    #nomear_designar = ""
     nr_pagina = 0
 
     nomes_tabela = pd.DataFrame()
@@ -974,28 +985,19 @@ def nomeacoes_exoneracoes_filtrado(nomeacoes_exoneracoes):
 
     linha = 0
 
+    nomeacoes_exoneracoes = nomeacoes_exoneracoes.fillna('Vazio', inplace=False)
+    nomeacoes_exoneracoes["Símbolo"] = nomeacoes_exoneracoes["Símbolo"].astype(str)
+    nomeacoes_exoneracoes["Função"] = nomeacoes_exoneracoes["Função"].astype(str)
+    
+    nomeacoes_exoneracoes = nomeacoes_exoneracoes.reset_index(drop=True)
+
     for i in nomeacoes_exoneracoes.index:
 
-        if(not (pd.isnull(nomeacoes_exoneracoes.at[i, "Função"]))):
+        if(nomeacoes_exoneracoes.at[i, "Função"] != "" or nomeacoes_exoneracoes.at[i, "Função"] != "Vazio"):
 
-            if(not (pd.isnull(nomeacoes_exoneracoes.at[i, "Símbolo"]))):
+            if((nomeacoes_exoneracoes.at[i, "Símbolo"] != "") or (nomeacoes_exoneracoes.at[i, "Símbolo"] != "Vazio")):
 
-                if("10" in nomeacoes_exoneracoes.at[i, "Símbolo"] or "S/E" in nomeacoes_exoneracoes.at[i, "Símbolo"] or "Prefeito" in nomeacoes_exoneracoes.at[i, "Função"] or "Subsecretário" in nomeacoes_exoneracoes.at[i, "Função"] or "Subsecretária" in nomeacoes_exoneracoes.at[i, "Função"] or "Secretária" in nomeacoes_exoneracoes.at[i, "Função"] or "Prefeita" in nomeacoes_exoneracoes.at[i, "Função"]):
-
-                    nomeacoes_exoneracoes_filtrado.at[linha, "Nome"] = nomeacoes_exoneracoes.at[i, "Nome"]
-                    nomeacoes_exoneracoes_filtrado.at[linha, "Matrícula"] = nomeacoes_exoneracoes.at[i, "Matrícula"]
-                    nomeacoes_exoneracoes_filtrado.at[linha, "Código"] = nomeacoes_exoneracoes.at[i, "Código"]
-                    nomeacoes_exoneracoes_filtrado.at[linha, "Validade"] = nomeacoes_exoneracoes.at[i, "Validade"]
-                    nomeacoes_exoneracoes_filtrado.at[linha, "Função"] = nomeacoes_exoneracoes.at[i, "Função"]
-                    nomeacoes_exoneracoes_filtrado.at[linha, "Símbolo"] = nomeacoes_exoneracoes.at[i, "Símbolo"]
-                    nomeacoes_exoneracoes_filtrado.at[linha, "Órgão 1"] = nomeacoes_exoneracoes.at[i, "Órgão 1"]
-                    nomeacoes_exoneracoes_filtrado.at[linha, "Órgão 2"] = nomeacoes_exoneracoes.at[i, "Órgão 2"]
-
-                    linha += 1
-
-            else:
-
-                if(("Subsecretário" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Diretor" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Diretora" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Secretário" in nomeacoes_exoneracoes.at[i, "Função"]) or "Prefeito" in nomeacoes_exoneracoes.at[i, "Função"] or "Subsecretária" in nomeacoes_exoneracoes.at[i, "Função"] or "Secretária" in nomeacoes_exoneracoes.at[i, "Função"] or "Prefeita" in nomeacoes_exoneracoes.at[i, "Função"]):
+                if(("10" in nomeacoes_exoneracoes.at[i, "Símbolo"] or "S/E" in nomeacoes_exoneracoes.at[i, "Símbolo"])):
 
                     nomeacoes_exoneracoes_filtrado.at[linha, "Nome"] = nomeacoes_exoneracoes.at[i, "Nome"]
                     nomeacoes_exoneracoes_filtrado.at[linha, "Matrícula"] = nomeacoes_exoneracoes.at[i, "Matrícula"]
@@ -1007,6 +1009,23 @@ def nomeacoes_exoneracoes_filtrado(nomeacoes_exoneracoes):
                     nomeacoes_exoneracoes_filtrado.at[linha, "Órgão 2"] = nomeacoes_exoneracoes.at[i, "Órgão 2"]
 
                     linha += 1
+
+                else:
+
+                    if((nomeacoes_exoneracoes.at[i, "Símbolo"] == "") or (nomeacoes_exoneracoes.at[i, "Símbolo"] == "Vazio")):
+
+                        if(("Subsecretário" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Diretor" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Diretora" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Secretário" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Prefeito" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Subsecretária" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Secretária" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Prefeita" in nomeacoes_exoneracoes.at[i, "Função"])):
+
+                            nomeacoes_exoneracoes_filtrado.at[linha, "Nome"] = nomeacoes_exoneracoes.at[i, "Nome"]
+                            nomeacoes_exoneracoes_filtrado.at[linha, "Matrícula"] = nomeacoes_exoneracoes.at[i, "Matrícula"]
+                            nomeacoes_exoneracoes_filtrado.at[linha, "Código"] = nomeacoes_exoneracoes.at[i, "Código"]
+                            nomeacoes_exoneracoes_filtrado.at[linha, "Validade"] = nomeacoes_exoneracoes.at[i, "Validade"]
+                            nomeacoes_exoneracoes_filtrado.at[linha, "Função"] = nomeacoes_exoneracoes.at[i, "Função"]
+                            nomeacoes_exoneracoes_filtrado.at[linha, "Símbolo"] = nomeacoes_exoneracoes.at[i, "Símbolo"]
+                            nomeacoes_exoneracoes_filtrado.at[linha, "Órgão 1"] = nomeacoes_exoneracoes.at[i, "Órgão 1"]
+                            nomeacoes_exoneracoes_filtrado.at[linha, "Órgão 2"] = nomeacoes_exoneracoes.at[i, "Órgão 2"]
+
+                            linha += 1
             
     return nomeacoes_exoneracoes_filtrado
 
@@ -1052,9 +1071,10 @@ def transforma_nomeacoes_exoneracoes_texto(nomeacoes_exoneracoes_filtrado, nomea
 
             texto = texto + ", " + str(nomeacoes_exoneracoes_filtrado.at[k, "Órgão 2"])
 
-        if(str(nomeacoes_exoneracoes_filtrado.at[k, "Símbolo"]) != ""):
+        if((str(nomeacoes_exoneracoes_filtrado.at[k, "Símbolo"]) != "") and (str(nomeacoes_exoneracoes_filtrado.at[k, "Símbolo"]) != "Vazio")):
 
             texto = texto + " (" + str(nomeacoes_exoneracoes_filtrado.at[k, "Símbolo"]).strip() + ")"
+
 
         texto = texto + "."
         texto = texto + "\n" + "\n"
@@ -1468,7 +1488,7 @@ def identifica_contratacoes2(texto_formatado):
 arquivo = st.sidebar.text_area("Inclua o link para o pdf do DO da Prefeitura do Rio de Janeiro")
 arquivo_selecionado = st.sidebar.button("Enviar")
 
-# %%
+# %% principal
 if(arquivo_selecionado):
     
     nome_arquivo = Path(arquivo.split('/', 6)[6] + ".pdf")
