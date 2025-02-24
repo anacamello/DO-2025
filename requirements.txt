@@ -2,4 +2,3 @@ wget
 PyPDF2
 tabula-py
 streamlit_scrollable_textbox
-default-jre-headless
