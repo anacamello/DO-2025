@@ -2,3 +2,4 @@ wget
 PyPDF2
 tabula-py
 streamlit_scrollable_textbox
+openjdk-17-jre
