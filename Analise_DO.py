@@ -9,6 +9,7 @@ import re
 import streamlit as st
 from pathlib import Path
 import streamlit_scrollable_textbox as stx
+import numpy as np
 
 # %% identifica_data_do
 def identifica_data_do(texto_formatado):
@@ -975,18 +976,37 @@ def nomeacoes_exoneracoes_filtrado(nomeacoes_exoneracoes):
 
     for i in nomeacoes_exoneracoes.index:
 
-        if((not pd.isnull(nomeacoes.at[i, "Símbolo"]) and "10" in nomeacoes_exoneracoes.at[i, "Símbolo"]) or (not pd.isnull(nomeacoes_exoneracoes.at[i, "Símbolo"]) and "S/E" in nomeacoes_exoneracoes.at[i, "Símbolo"]) or ("Subsecretário" in nomeacoes_exoneracoes.at[i, "Função"] and nomeacoes_exoneracoes.at[i, "Símbolo"] == "") or ("Diretor" in nomeacoes_exoneracoes.at[i, "Função"] and nomeacoes_exoneracoes.at[i, "Símbolo"] == "") or ("Diretora" in nomeacoes_exoneracoes.at[i, "Função"] and nomeacoes_exoneracoes.at[i, "Símbolo"] == "") or ("Secretário" in nomeacoes_exoneracoes.at[i, "Função"] and nomeacoes_exoneracoes.at[i, "Símbolo"] == "") or "Prefeito" in nomeacoes_exoneracoes.at[i, "Função"] or "Subsecretária" in nomeacoes_exoneracoes.at[i, "Função"] or "Secretária" in nomeacoes_exoneracoes.at[i, "Função"] or "Prefeita" in nomeacoes_exoneracoes.at[i, "Função"]):
+        if(not (pd.isnull(nomeacoes_exoneracoes.at[i, "Função"]))):
 
-            nomeacoes_exoneracoes_filtrado.at[linha, "Nome"] = nomeacoes_exoneracoes.at[i, "Nome"]
-            nomeacoes_exoneracoes_filtrado.at[linha, "Matrícula"] = nomeacoes_exoneracoes.at[i, "Matrícula"]
-            nomeacoes_exoneracoes_filtrado.at[linha, "Código"] = nomeacoes_exoneracoes.at[i, "Código"]
-            nomeacoes_exoneracoes_filtrado.at[linha, "Validade"] = nomeacoes_exoneracoes.at[i, "Validade"]
-            nomeacoes_exoneracoes_filtrado.at[linha, "Função"] = nomeacoes_exoneracoes.at[i, "Função"]
-            nomeacoes_exoneracoes_filtrado.at[linha, "Símbolo"] = nomeacoes_exoneracoes.at[i, "Símbolo"]
-            nomeacoes_exoneracoes_filtrado.at[linha, "Órgão 1"] = nomeacoes_exoneracoes.at[i, "Órgão 1"]
-            nomeacoes_exoneracoes_filtrado.at[linha, "Órgão 2"] = nomeacoes_exoneracoes.at[i, "Órgão 2"]
+            if(not (pd.isnull(nomeacoes_exoneracoes.at[i, "Símbolo"]))):
 
-            linha += 1
+                if("10" in nomeacoes_exoneracoes.at[i, "Símbolo"] or "S/E" in nomeacoes_exoneracoes.at[i, "Símbolo"] or "Prefeito" in nomeacoes_exoneracoes.at[i, "Função"] or "Subsecretário" in nomeacoes_exoneracoes.at[i, "Função"] or "Subsecretária" in nomeacoes_exoneracoes.at[i, "Função"] or "Secretária" in nomeacoes_exoneracoes.at[i, "Função"] or "Prefeita" in nomeacoes_exoneracoes.at[i, "Função"]):
+
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Nome"] = nomeacoes_exoneracoes.at[i, "Nome"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Matrícula"] = nomeacoes_exoneracoes.at[i, "Matrícula"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Código"] = nomeacoes_exoneracoes.at[i, "Código"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Validade"] = nomeacoes_exoneracoes.at[i, "Validade"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Função"] = nomeacoes_exoneracoes.at[i, "Função"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Símbolo"] = nomeacoes_exoneracoes.at[i, "Símbolo"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Órgão 1"] = nomeacoes_exoneracoes.at[i, "Órgão 1"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Órgão 2"] = nomeacoes_exoneracoes.at[i, "Órgão 2"]
+
+                    linha += 1
+
+            else:
+
+                if(("Subsecretário" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Diretor" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Diretora" in nomeacoes_exoneracoes.at[i, "Função"]) or ("Secretário" in nomeacoes_exoneracoes.at[i, "Função"]) or "Prefeito" in nomeacoes_exoneracoes.at[i, "Função"] or "Subsecretária" in nomeacoes_exoneracoes.at[i, "Função"] or "Secretária" in nomeacoes_exoneracoes.at[i, "Função"] or "Prefeita" in nomeacoes_exoneracoes.at[i, "Função"]):
+
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Nome"] = nomeacoes_exoneracoes.at[i, "Nome"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Matrícula"] = nomeacoes_exoneracoes.at[i, "Matrícula"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Código"] = nomeacoes_exoneracoes.at[i, "Código"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Validade"] = nomeacoes_exoneracoes.at[i, "Validade"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Função"] = nomeacoes_exoneracoes.at[i, "Função"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Símbolo"] = nomeacoes_exoneracoes.at[i, "Símbolo"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Órgão 1"] = nomeacoes_exoneracoes.at[i, "Órgão 1"]
+                    nomeacoes_exoneracoes_filtrado.at[linha, "Órgão 2"] = nomeacoes_exoneracoes.at[i, "Órgão 2"]
+
+                    linha += 1
             
     return nomeacoes_exoneracoes_filtrado
 
