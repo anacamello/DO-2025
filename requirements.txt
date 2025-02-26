@@ -2,3 +2,5 @@ wget
 PyPDF2
 tabula-py
 streamlit_scrollable_textbox
+sumy
+nltk
