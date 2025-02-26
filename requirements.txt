@@ -2,7 +2,7 @@ wget
 PyPDF2
 tabula-py
 streamlit_scrollable_textbox
-bs4
+beautifulsoup4
 re
 sumy
 nltk
