@@ -10,6 +10,12 @@ import streamlit as st
 from pathlib import Path
 import streamlit_scrollable_textbox as stx
 import numpy as np
+import bs4 as bs
+import re
+import nltk
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.luhn import LuhnSummarizer
 
 # %% identifica_data_do
 def identifica_data_do(texto_formatado):
@@ -745,10 +751,10 @@ def identifica_nomeacoes(texto_formatado, nome_arquivo):
                     sub_texto = texto_formatado_por_pagina[k].split("Designar")[cont_desig+1]
                     cont_desig += 1
 
-                subtexto_paragrafo = sub_texto[:450]
+                subtexto_paragrafo = sub_texto[:520]
                 subtexto_paragrafo = subtexto_paragrafo.split(". ")[0]
 
-                if("..." not in subtexto_paragrafo):
+                if(("..." not in subtexto_paragrafo) and ("impedimentos eventuais e afastamentos legais" not in subtexto_paragrafo)):
 
                     if("DAS" in subtexto_paragrafo or "S/E" in subtexto_paragrafo or "Diretor" in subtexto_paragrafo or "Diretora" in subtexto_paragrafo):
 
@@ -1181,6 +1187,17 @@ def identifica_valor(subtexto_paragrafo):
     simbolo = False
     
     numero = True
+
+    subtexto_paragrafo = subtexto_paragrafo.replace("0, ", "0 ")
+    subtexto_paragrafo = subtexto_paragrafo.replace("1, ", "1 ")
+    subtexto_paragrafo = subtexto_paragrafo.replace("2, ", "2 ")
+    subtexto_paragrafo = subtexto_paragrafo.replace("3, ", "3 ")
+    subtexto_paragrafo = subtexto_paragrafo.replace("4, ", "4 ")
+    subtexto_paragrafo = subtexto_paragrafo.replace("5, ", "5 ")
+    subtexto_paragrafo = subtexto_paragrafo.replace("6, ", "6 ")
+    subtexto_paragrafo = subtexto_paragrafo.replace("7, ", "7 ")
+    subtexto_paragrafo = subtexto_paragrafo.replace("8, ", "8 ")
+    subtexto_paragrafo = subtexto_paragrafo.replace("9, ", "9 ")
     
     if('no valor global de ' in subtexto_paragrafo):
         
@@ -1341,7 +1358,7 @@ def identifica_valor(subtexto_paragrafo):
     return valor_float
 
 # %% identifica_contratacoes
-def identifica_contratacoes(texto_formatado):
+def identifica_contratacoes(texto_formatado, limite_contratos):
     
     contratacoes_df = pd.DataFrame()
 
@@ -1420,14 +1437,12 @@ def identifica_contratacoes(texto_formatado):
 
                     valor_contrato = identifica_valor(subtexto_paragrafo)
 
-                    if(valor_contrato > 1000000):
+                    if(valor_contrato > limite_contratos):
 
                         contratacoes = contratacoes + "\n" + "***********" + "\n" + subtexto_paragrafo
                         contratacoes_df.at[linha, 'Valor'] = valor_contrato
                         
                         linha += 1
-
-    #st.dataframe(contratacoes_df)
 
     return contratacoes
 
@@ -1484,8 +1499,90 @@ def identifica_contratacoes2(texto_formatado):
                 linha += 1
 
     return contratacoes
+
+# %% recorta_texto_pagina
+
+def recorta_texto_pagina(texto_formatado, pag):
+
+    if(pag == 1):
+
+        texto_recortado_pagina = texto_formatado.split("**id_pag**")[pag-1]
+
+        if not("de 2025" in texto_recortado_pagina):
+
+            texto_recortado_pagina = texto_formatado.split("**id_pag**")[pag]
+
+    texto_recortado_pagina = texto_recortado_pagina.split("Foto")[0]
+
+    texto_recortado_pagina = texto_recortado_pagina.split("de 2025")[1]
+
+    return texto_recortado_pagina
+# %% resume_texto_sumy
+
+def resume_texto_sumy(texto, linhas_resumo):
+
+    parser = PlaintextParser.from_string(texto, Tokenizer("portuguese"))
+    sumarizador = LuhnSummarizer()
+    resumo = sumarizador(parser.document, linhas_resumo)
+
+    resumo_sumy = ""
+
+    for sentenca in resumo:
+
+        resumo_sumy = resumo_sumy + str(sentenca)
+
+    return resumo_sumy
+        
+
+# %% resume_texto
+
+def resume_texto(texto, linhas_resumo):
+
+    parsed_article = bs.BeautifulSoup(texto,'lxml')
+    paragraphs = parsed_article.find_all('p')
+
+    article_text = ""
+
+    for p in paragraphs:
+        article_text += p.text
+    # Removing Square Brackets and Extra Spaces
+    article_text = re.sub(r'\[[0-9]*\]', ' ', article_text)
+    article_text = re.sub(r'\s+', ' ', article_text)
+    # Removing special characters and digits
+    formatted_article_text = re.sub('[^a-zA-Z]', ' ', article_text )
+    formatted_article_text = re.sub(r'\s+', ' ', formatted_article_text)
+    sentence_list = nltk.sent_tokenize(article_text)
+    stopwords = nltk.corpus.stopwords.words('portuguese')
+
+    word_frequencies = {}
+    for word in nltk.word_tokenize(formatted_article_text):
+        if word not in stopwords:
+            if word not in word_frequencies.keys():
+                word_frequencies[word] = 1
+            else:
+                word_frequencies[word] += 1
+        maximum_frequncy = max(word_frequencies.values())
+    for word in word_frequencies.keys():
+        word_frequencies[word] = (word_frequencies[word]/maximum_frequncy)
+        sentence_scores = {}
+    for sent in sentence_list:
+        for word in nltk.word_tokenize(sent.lower()):
+            if word in word_frequencies.keys():
+                if len(sent.split(' ')) < 30:
+                    if sent not in sentence_scores.keys():
+                        sentence_scores[sent] = word_frequencies[word]
+                    else:
+                        sentence_scores[sent] += word_frequencies[word]
+    import heapq
+    summary_sentences = heapq.nlargest(linhas_resumo, sentence_scores, key=sentence_scores.get)
+
+    summary = ' '.join(summary_sentences)
+
+    return summary
 # %% menu lateral
 arquivo = st.sidebar.text_area("Inclua o link para o pdf do DO da Prefeitura do Rio de Janeiro")
+limite_contratos = st.sidebar.number_input("Insira o valor mínimo dos contratos:", value=1000000, step = 100000)
+linhas_resumo = st.sidebar.number_input("Insira a quantidade de frases do resumo:", value=2, step = 1)
 arquivo_selecionado = st.sidebar.button("Enviar")
 
 # %% principal
@@ -1525,7 +1622,6 @@ if(arquivo_selecionado):
 
     exoneracoes_filtrado = nomeacoes_exoneracoes_filtrado(exoneracoes)
     texto_exoneracoes = transforma_nomeacoes_exoneracoes_texto(exoneracoes_filtrado, "Exonerações")
-
     
     data = identifica_data_do(texto_formatado)
     
@@ -1540,12 +1636,30 @@ if(arquivo_selecionado):
     st.write_stream(texto_nomeacoes)
     st.write_stream(texto_exoneracoes)
 
-    contratacoes = identifica_contratacoes(texto_formatado)
+    contratacoes = identifica_contratacoes(texto_formatado, limite_contratos)
 
     st.divider()
 
     st.markdown("**3. Licitações, Contratos e Concessões**")
     stx.scrollableTextbox(contratacoes, height=1000)
+
+    st.markdown("**5. Utilidade Pública (Capa do Diário)**")
+
+    texto_primeira_pagina = recorta_texto_pagina(texto_formatado,1)
+
+    texto_resumido = resume_texto(texto_primeira_pagina, linhas_resumo)
+
+    #st.text(texto_primeira_pagina)
+
+    st.text("******* Opção 1: *******")
+
+    st.text(texto_resumido)
+
+    st.text("******* Opção 2: *******")
+
+    texto_resumido_sumy = resume_texto_sumy(texto_primeira_pagina, linhas_resumo)
+
+    st.text(texto_resumido_sumy)
 
 # %%
 
