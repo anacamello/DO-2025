@@ -3,7 +3,7 @@ import wget
 import PyPDF2
 import re
 import tabula
-#import spacy
+import os
 import pandas as pd
 import re
 import streamlit as st
@@ -16,6 +16,15 @@ import nltk
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.luhn import LuhnSummarizer
+
+nltk_data_dir = "./resources/nltk_data_dir/"
+if not os.path.exists(nltk_data_dir):
+    os.makedirs(nltk_data_dir, exist_ok=True)
+nltk.data.path.clear()
+nltk.data.path.append(nltk_data_dir)
+#nltk.download("stopwords", download_dir=nltk_data_dir)
+nltk.download('punkt', download_dir=nltk_data_dir)
+nltk.download('punkt_tab', download_dir=nltk_data_dir)
 
 # %% identifica_data_do
 def identifica_data_do(texto_formatado):
