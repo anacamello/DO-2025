@@ -5,4 +5,3 @@ streamlit_scrollable_textbox
 beautifulsoup4==4.12.2
 sumy
 nltk
--m nltk.downloader punkt_tab
