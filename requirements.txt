@@ -4,3 +4,4 @@ tabula-py
 beautifulsoup4==4.12.2
 sumy
 nltk
+setuptools
