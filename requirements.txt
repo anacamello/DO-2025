@@ -4,4 +4,3 @@ tabula-py
 beautifulsoup4==4.12.2
 sumy
 nltk
-streamlit_scrollable_textbox
