@@ -1183,6 +1183,7 @@ def limpa_numero(valor):
     valor = valor.replace("º", " ")
     valor = valor.replace(":", " ")
     valor = valor.replace("Ç", " ")
+    valor = valor.replace("à", " ")
 
     valor = valor.split()[0]
     
