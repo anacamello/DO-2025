@@ -310,7 +310,7 @@ def identifica_validade(nomear_designar, subtexto_paragrafo):
 # %% identifica_funcao
 def identifica_funcao(nomear_designar, subtexto_paragrafo):
     
-    funcao = ""
+    funcao = ""        
     
     if("Cargo em Comissão de" in subtexto_paragrafo):    
 
@@ -762,6 +762,12 @@ def identifica_nomeacoes(texto_formatado, nome_arquivo):
 
                 subtexto_paragrafo = sub_texto[:520]
                 subtexto_paragrafo = subtexto_paragrafo.split(". ")[0]
+
+                if("InvestimentosCCPAR"in subtexto_paragrafo):
+
+                    subtexto_paragrafo = subtexto_paragrafo.replace("InvestimentosCCPAR", "Investimentos - CCPAR")
+                
+                    subtexto_paragrafo = subtexto_paragrafo.partition("Investimentos - CCPAR")[0] + "Investimentos - CCPAR"
 
                 if(("..." not in subtexto_paragrafo) and ("impedimentos eventuais e afastamentos legais" not in subtexto_paragrafo)):
 
