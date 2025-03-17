@@ -1195,6 +1195,7 @@ def limpa_numero(valor):
     valor = valor.replace(":", " ")
     valor = valor.replace("Ç", " ")
     valor = valor.replace("à", " ")
+    valor = valor.replace("Ã", " ")
 
     valor = valor.split()[0]
     
@@ -1246,7 +1247,7 @@ def identifica_valor(subtexto_paragrafo):
             
             valor = subtexto_paragrafo.partition("no valor global de ")[2]
             
-        if("SIGILOSO" in valor or "Sigiloso" in valor or "sigiloso" in valor):
+        if("SIGILOSO" in valor or "Sigiloso" in valor or "sigiloso" in valor or "NATUREZA DE DESPESA" in valor):
                 
             numero = False
         
