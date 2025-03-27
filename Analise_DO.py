@@ -16,6 +16,7 @@ import nltk
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.luhn import LuhnSummarizer
+import numbers
 
 nltk_data_dir = "./resources/nltk_data_dir/"
 if not os.path.exists(nltk_data_dir):
@@ -1270,9 +1271,13 @@ def identifica_valor(subtexto_paragrafo):
             valor = valor.replace('"', "")
             valor = valor.replace('”', "")
 
-            if(valor.isnumeric()):
+            try:
 
                 valor_float = float(valor)
+
+            except:
+
+                valor_float = 0
 
     else:
         
@@ -1295,9 +1300,13 @@ def identifica_valor(subtexto_paragrafo):
                 valor = valor.replace('"', "")
                 valor = valor.replace('”', "")
 
-                if(valor.isnumeric()):
+                try:
 
                     valor_float = float(valor)
+
+                except:
+
+                    valor_float = 0
             
         else:
             
@@ -1320,9 +1329,13 @@ def identifica_valor(subtexto_paragrafo):
                     valor = valor.replace('"', "")
                     valor = valor.replace('”', "")
 
-                    if(valor.isnumeric()):
+                    try:
 
                         valor_float = float(valor)
+
+                    except:
+
+                        valor_float = 0
                 
             else:
                 
@@ -1345,9 +1358,13 @@ def identifica_valor(subtexto_paragrafo):
                         valor = valor.replace('"', "")
                         valor = valor.replace('”', "")
 
-                        if(valor.isnumeric()):                 
+                        try:                 
 
                             valor_float = float(valor)
+
+                        except:
+
+                                    valor_float = 0
                     
                 else:
                      
@@ -1370,9 +1387,13 @@ def identifica_valor(subtexto_paragrafo):
                             valor = valor.replace('"', "")
                             valor = valor.replace('”', "")
 
-                            if(valor.isnumeric()):
+                            try:
 
                                 valor_float = float(valor)
+                            
+                            except:
+
+                                valor_float = 0
                         
                     else:
                         
@@ -1397,9 +1418,13 @@ def identifica_valor(subtexto_paragrafo):
 
                                 valor = valor.split()[0]
 
-                                if(valor.isnumeric()):
+                                try:
 
                                     valor_float = float(valor)
+
+                                except:
+
+                                    valor_float = 0
     
     return valor_float
 
