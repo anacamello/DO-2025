@@ -1267,8 +1267,12 @@ def identifica_valor(subtexto_paragrafo):
             valor = valor.replace(",", ".", 1)
 
             valor = valor.replace(",", " ", 2)
+            valor = valor.replace('"', "")
+            valor = valor.replace('”', "")
 
-            valor_float = float(valor)
+            if(valor.isnumeric()):
+
+                valor_float = float(valor)
 
     else:
         
@@ -1288,8 +1292,12 @@ def identifica_valor(subtexto_paragrafo):
                 valor = valor.replace(",", ".", 1)
 
                 valor = valor.replace(",", " ", 2)
+                valor = valor.replace('"', "")
+                valor = valor.replace('”', "")
 
-                valor_float = float(valor)
+                if(valor.isnumeric()):
+
+                    valor_float = float(valor)
             
         else:
             
@@ -1309,8 +1317,12 @@ def identifica_valor(subtexto_paragrafo):
                     valor = valor.replace(",", ".", 1)
 
                     valor = valor.replace(",", " ", 2)
+                    valor = valor.replace('"', "")
+                    valor = valor.replace('”', "")
 
-                    valor_float = float(valor)
+                    if(valor.isnumeric()):
+
+                        valor_float = float(valor)
                 
             else:
                 
@@ -1329,9 +1341,13 @@ def identifica_valor(subtexto_paragrafo):
                         valor = valor.replace(".", "")
                         valor = valor.replace(",", ".", 1)
 
-                        valor = valor.replace(",", " ", 2)                 
+                        valor = valor.replace(",", " ", 2)
+                        valor = valor.replace('"', "")
+                        valor = valor.replace('”', "")
 
-                        valor_float = float(valor)
+                        if(valor.isnumeric()):                 
+
+                            valor_float = float(valor)
                     
                 else:
                      
@@ -1351,8 +1367,12 @@ def identifica_valor(subtexto_paragrafo):
                             valor = valor.replace(",", ".", 1)
 
                             valor = valor.replace(",", " ", 2)
+                            valor = valor.replace('"', "")
+                            valor = valor.replace('”', "")
 
-                            valor_float = float(valor)
+                            if(valor.isnumeric()):
+
+                                valor_float = float(valor)
                         
                     else:
                         
@@ -1372,10 +1392,14 @@ def identifica_valor(subtexto_paragrafo):
                                 valor = valor.replace(",", ".", 1)
 
                                 valor = valor.replace(",", " ", 2)
+                                valor = valor.replace('"', "")
+                                valor = valor.replace('”', "")
 
                                 valor = valor.split()[0]
 
-                                valor_float = float(valor)
+                                if(valor.isnumeric()):
+
+                                    valor_float = float(valor)
     
     return valor_float
 
